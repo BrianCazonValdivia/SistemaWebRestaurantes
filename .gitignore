@@ -3,3 +3,19 @@ node_modules
 .env
 
 /generated/prisma
+
+# Prisma local DB
+*.db
+prisma/dev.db
+polleria-web/prisma/dev.db
+
+
+node_modules/
+polleria-web/node_modules/
+.env
+polleria-web/.env
+.next/
+polleria-web/.next/
+*.db
+polleria-web/prisma/dev.db
+

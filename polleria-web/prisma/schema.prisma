@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+//generator client {
+  //provider = "prisma-client"
+  //output   = "../generated/prisma"
+//}
+
+//datasource db {
+  //provider = "postgresql"
+//}\
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  SOLD
+  CANCELED
+}
+
+enum DeliveryType {
+  DELIVERY
+  PICKUP
+}
+
+enum PaymentMethod {
+  QR
+  CASH
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  desc      String   @default("")
+  precio    Float
+  categoria String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems OrderItem[]   
+}
+
+
+model Order {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  status       OrderStatus   @default(SOLD)
+
+  customerName String
+  customerPhone String
+
+  deliveryType DeliveryType
+  deliveryFee  Float         @default(0)
+  direccion    String?       // solo si delivery
+  referencia   String?
+
+  paymentMethod PaymentMethod
+
+  subtotal     Float
+  total        Float
+
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  qty       Int
+  price     Float // precio unitario en el momento de compra
+  nameSnap  String // nombre del producto “snapshot”
+}
+
